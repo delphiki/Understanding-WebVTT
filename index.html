@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<title>Understanding WebVTT file format</title>
+	<meta name="DC.title" content="Understanding WebVTT file format" />
+    <meta name="description" content="How WebVTT works, and how to use it." />
+    <meta name="keywords" content="websrt, webvtt, html5, video, subtitles, cue, w3c" />
+    <meta name="author" content="Julien Villetorte" />
+	
+	<!--[if IE]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<style type="text/css" media="screen">
+		body{
+			font-family:Verdana;
+		}
+		blockquote{
+			border:1px solid #e3e3e3;
+			background-color:#bfbfbf;
+			padding:5px;
+		}
+		span.quote{
+			background-color:#cfcfcf;
+			padding:1px;	
+		}
+		span.hl{
+			color:#ff4500;
+		}
+		h4{
+			margin-top:30px;
+		}
+		h5{
+			font-size:1em;
+			text-decoration:underline;
+		}
+		table, tr, td{
+			border:1px solid #bfbfbf;
+			border-collapse:collapse;
+		}
+		td{
+			padding:4px;
+		}
+		ul li{
+			margin-bottom:5px;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Understanding WebVTT file format (draft)</h1>
+	</header>
+	<p>
+		Julien Villetorte &lt;j.villetorte[at]gmail[dot]com&gt; <a href="http://twitter.com/delphiki">@delphiki</a><br />
+		Lastest update: 2011, 20 May<br />
+		Thanks to <a href="http://html5doctor.com/">HTML5Doctor</a>, Bruce Lawson &amp; Simon Pieters (Opera Software).
+		<br /><br />
+		<a href="http://www.whatwg.org/specs/web-apps/current-work/webvtt.html">WebVTT</a> is widely based on the <a href="http://en.wikipedia.org/wiki/SubRip">SubRip file format</a>.<br />
+		Compatible player: <a href="/html5/playr">Playr</a>.
+	</p>
+
+	<nav>
+		<h4>Contents</h4>
+		<ul>
+			<li><a href="#file-specifications">File specifications</a></li>
+			<li><a href="#format-specifications">Format specifications</a>
+				<ul>
+					<li><a href="#file-header">File header</a></li>
+					<li><a href="#cue-format">Cue format</a></li>
+					<li><a href="#cue-settings">Cue settings</a></li>
+					<li><a href="#cue-text">Cue text</a>
+						<ul>
+							<li><a href="#cue-text-replacements">Replacements</a></li>
+							<li><a href="#voice-declaration-tags">Voice declaration tags</a></li>
+							<li><a href="#text-tags">Text tags</a></li>	
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+	<article>
+	<section>
+		<h3 id="file-specifications">File specifications</h3>
+		<p>
+			Encoding: UTF-8<br />
+			MIME type: text/vtt<br />
+			Line terminator: \r, \n or \r\n<br />
+		</p>
+	</section>
+	<section>
+		<h3 id="format-specifications">Format specifications</h3>
+		<section>
+			<h4 id="file-header"># File header</h4>
+			<blockquote>
+				WEBVTT FILE<br />
+				<br />
+				[cue]<br />
+				<br />
+				...
+			</blockquote>
+			<h4 id="cue-format"># Cue format</h4>
+			<blockquote>
+				[one or more characters not containing the substring "-->" or \r, \n, \r\n]<br />
+				[hh...:]<span class="hl">mm:ss.msmsms --> </span>[hh...:]<span class="hl">mm:ss.msmsms</span> [settings]<br />
+				<span class="hl">First line<br />
+				Second line<br />
+				...</span>
+			</blockquote>
+			Example:
+			<blockquote>
+				WEBVTT FILE<br />
+				<br />
+				1<br />
+				01:23:45.678 --> 01:23:46.789<br />
+				Hello world!<br />
+				<br />
+				2<br />
+				01:23:48.910 --> 01:23:49.101<br />
+				Hello<br />
+				world!<br />
+			</blockquote>
+			Milliseconds separators are full stops (.) not a commas (,).<br />
+			Cues have to be separated by one (or more) blank line.
+		</section>
+		<section>
+			<h4 id="cue-settings"># Cue settings</h4>
+			Settings have to placed right after the timing, on the same line, separated with one (or more) space or tabulation.
+			<br /><br />
+			<table>
+				<tr>
+					<td>Vertical text</td>
+					<td>
+						<ul>
+							<li><span class="quote hl">D:vertical</span> (vertical growing left)</li>
+							<li><span class="quote hl">D:vertical-lr</span> (vertical growing right)</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>Line position</td>
+					<td>
+						<ul>
+							<li>A specific position relative to the video frame:<br />
+								<span class="quote"><span class="hl">L:</span>[a number]<span class="hl">%</span></span>, where [a number] is a positive integer.
+							</li>
+							<li>A line number:<br />
+								<span class="quote"><span class="hl">L:</span>[a number]<span class="hl"></span></span>, where [a number] is a positive or negative integer.<br />
+							</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>Text position</td>
+					<td>
+						<span class="quote"><span class="hl">T:</span>[a number]<span class="hl">%</span></span>, where [a number] is a positive integer.
+					</td>
+				</tr>
+				<tr>
+					<td>Text size</td>
+					<td>
+						<span class="quote"><span class="hl">S:</span>[a number]<span class="hl">%</span></span>, where [a number] is a positive integer.
+					</td>
+				</tr>
+				<tr>
+					<td>Text alignment</td>
+					<td>
+						<span class="quote hl">A:start</span>
+						or <span class="quote hl">A:middle</span>
+						or <span class="quote hl">A:end</span>
+					</td>
+			</table>
+			<br />
+			Cue setting example:
+			<blockquote>
+				WEBVTT FILE<br />
+				<br />
+				1<br />
+				01:23:45.678 --> 01:23:46.789 <span class="hl">D:vertical</span><br />
+				Hello world!<br />
+				<br />
+				2<br />
+				01:23:48.910 --> 01:23:49.101 <span class="hl">S:50%</span><br />
+				Hello<br />
+				world!<br />
+			</blockquote>
+		</section>
+		<section>
+			<h4 id="cue-text"># Cue text</h4>
+			<section>
+				<h5 id="cue-text-replacements">Replacements</h5>
+				<ul>
+					<li><span class="quote hl">&amp;</span> has to be replaced with <span class="quote hl">&amp;amp;</span></li>
+					<li><span class="quote hl">&lt;</span> has to be replaced with <span class="quote hl">&amp;lt;</span></li>
+					<li><span class="quote hl">&gt;</span> has to be replaced with <span class="quote hl">&amp;gt;</span></li>
+				</ul>
+			</section>
+			<section>
+				<h5 id="voice-declaration-tags">Voice declaration tags</h5>
+				<ul>
+					<li><span class="quote hl">&lt;v.Name&gt;</span></li>
+				</ul>
+				Example:
+				<blockquote>
+					01:23:45.678 --> 01:23:46.789<br />
+					- <span class="hl">&lt;v.John&gt;</span>Hey!<span class="hl">&lt;/v&gt;</span><br />
+					- <span class="hl">&lt;v.Jane&gt;</span>Hey!<span class="hl">&lt;/v&gt;</span>
+				</blockquote>
+			</section>
+			<section>
+				<h5 id="text-tags">Text tags</h5>
+				<ul>
+					<li><span>Class</span>: <span class="quote"><span class="hl">&lt;c.classname&gt;</span>Your text<span class="hl">&lt;/c&gt;</span></span></li>
+					<li><span style="font-weight:bold">Bold</span>: <span class="quote"><span class="hl">&lt;b&gt;</span>Your text<span class="hl">&lt;/b&gt;</span></span></li>
+					<li><span style="font-style:italic">Italic</span>: <span class="quote"><span class="hl">&lt;i&gt;</span>Your text<span class="hl">&lt;/i&gt;</span></span></li>
+					<li><span style="text-decoration:underline">Underline</span>: <span class="quote"><span class="hl">&lt;u&gt;</span>Your text<span class="hl">&lt;/u&gt;</span></span></li>
+					<li>
+						Ruby annotations: <span class="quote"><span class="hl">&lt;ruby&gt;</span>base text<span class="hl">&lt;rt&gt;</span>annotation<span class="hl">&lt;/rt&gt;</span><span class="hl">&lt;/ruby&gt;</span></span>
+					</li>
+				</ul>
+				If you want your text to appear step-by-step (karaoke style), just put intermediate timestamps (wrapped with &lt;...&gt;) in your cue.<br />
+				Example:
+				<blockquote>
+					01:23:45.678 --> 01:23:46.789<br />
+					One... <span class="hl">&lt;01:23:45.800&gt;</span>Two... <span class="hl">&lt;01:23:46.500&gt;</span>Three...
+				</blockquote>
+			</section>
+		</section>
+	</section>
+	</article>
+</body>
+</html>
